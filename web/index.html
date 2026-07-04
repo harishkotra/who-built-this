@@ -145,6 +145,8 @@
 <script>
 const API = 'https://testnet.intuition.sh/v1/graphql'
 
+const CREATOR = '0xA2c0CDd6882543884A89Ed97F8f2fa231661eE8E'
+
 function gql(query) {
   return fetch(API, {
     method: 'POST',
@@ -166,10 +168,11 @@ function atomLink(termId, label) {
 
 async function loadDashboard() {
   try {
+    const filter = `creator_id: { _eq: "${CREATOR}" }`
     const [atomRes, tripleRes, statsRes] = await Promise.all([
-      gql(`{ atoms(limit: 15, order_by: { created_at: desc }) { term_id label type emoji } }`),
-      gql(`{ triples(limit: 15, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
-      gql(`{ atoms_aggregate { aggregate { count } } triples_aggregate { aggregate { count } } }`),
+      gql(`{ atoms(limit: 15, where: { ${filter} }, order_by: { created_at: desc }) { term_id label type emoji } }`),
+      gql(`{ triples(limit: 15, where: { ${filter} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
+      gql(`{ atoms_aggregate(where: { ${filter} }) { aggregate { count } } triples_aggregate(where: { ${filter} }) { aggregate { count } } }`),
     ])
     renderAtomList(atomRes.atoms)
     renderTripleList(tripleRes.triples)
@@ -226,15 +229,16 @@ async function showAtom(termId) {
   detail.innerHTML = '<div class="loading">Loading</div>'
 
   try {
+    const filter = `creator_id: { _eq: "${CREATOR}" }`
     const res = await gql(`{
       atom: atoms(where: { term_id: { _eq: "${termId}" } }) { term_id label type emoji data block_number }
-      as_subject: triples(where: { subject_id: { _eq: "${termId}" } }) {
+      as_subject: triples(where: { subject_id: { _eq: "${termId}" }, ${filter} }) {
         term_id subject { term_id label } predicate { term_id label } object { term_id label }
       }
-      as_predicate: triples(where: { predicate_id: { _eq: "${termId}" } }) {
+      as_predicate: triples(where: { predicate_id: { _eq: "${termId}" }, ${filter} }) {
         term_id subject { term_id label } predicate { term_id label } object { term_id label }
       }
-      as_object: triples(where: { object_id: { _eq: "${termId}" } }) {
+      as_object: triples(where: { object_id: { _eq: "${termId}" }, ${filter} }) {
         term_id subject { term_id label } predicate { term_id label } object { term_id label }
       }
     }`)
