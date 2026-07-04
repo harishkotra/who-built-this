@@ -1,0 +1,28 @@
+{
+  "name": "who-built-this",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "ingest": "bun run src/index.ts ingest",
+    "profile": "bun run src/index.ts profile",
+    "compare": "bun run src/index.ts compare",
+    "deps": "bun run src/index.ts deps",
+    "vouch": "bun run src/index.ts vouch",
+    "export": "bun run src/index.ts export"
+  },
+  "devDependencies": {
+    "bun-types": "^0.5.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@0xintuition/classifications": "0.1.0-alpha.0",
+    "@0xintuition/deployments": "0.1.0-alpha.0",
+    "@0xintuition/ids": "0.1.0-alpha.0",
+    "@0xintuition/predicates": "0.1.0-alpha.0",
+    "@0xintuition/primitives": "0.1.0-alpha.0",
+    "@0xintuition/protocol": "^3.0.0",
+    "dotenv": "^17.4.2",
+    "viem": "^2.21.0"
+  }
+}
