@@ -191,6 +191,7 @@
         <span>Triples <strong id="tripleCount">—</strong></span>
       </div>
       <span><span class="dot" id="statusDot"></span><span id="statusLabel" style="font-size:11px;color:var(--text-tertiary)">Connecting</span></span>
+      <span id="indexerLag" style="font-size:10px;color:var(--text-tertiary);display:none"></span>
     </div>
     <div class="right">
       <button class="icon-btn" id="viewToggle" onclick="toggleView()">List</button>
@@ -452,7 +453,20 @@ canvas.addEventListener('mouseleave', () => { hoveredNode = null; tooltip.style.
 function renderSide() {
   const body = document.getElementById('sideBody')
   if (!atoms.length && !triples.length) {
-    body.innerHTML = '<div class="empty-state">No graph data yet. Publish a repo with <code>--publish</code>, then wait for the testnet indexer to catch up.<br><br>Transactions are confirmed on-chain at block 9357153 — the indexer lags behind.</div>'
+    const lagEl = document.getElementById('indexerLag')
+    const idxBlock = lagEl.textContent.match(/block ([\d,]+)/)
+    const idxBlockNum = idxBlock ? parseInt(idxBlock[1].replace(/,/g,'')) : 0
+    const ourBlock = 9357153
+    const behind = idxBlockNum > 0 ? Math.max(0, ourBlock - idxBlockNum) : '?'
+    body.innerHTML = `<div class="empty-state">
+      <strong style="color:var(--accent)">Data is on-chain but indexer is behind</strong><br><br>
+      Our transactions were confirmed at block <strong>${ourBlock}</strong>.<br>
+      The testnet GraphQL indexer has only indexed to block <strong>${idxBlockNum || '?'}</strong>.<br>
+      Gap: <strong>${behind} blocks</strong> &mdash; this is an Intuition testnet infrastructure issue.<br><br>
+      Verify on-chain:<br>
+      <a href="https://testnet.explorer.intuition.systems/tx/0x162792250a34aceab00a407e82202bd6f20c88a61c1bc877d5b3b09a1821b2a7" target="_blank" style="color:var(--accent);font-size:11px">Tx 1: 6 predicate atoms &nearr;</a><br>
+      <a href="https://testnet.explorer.intuition.systems/tx/0x99e83a9d182cbaa42e8e3698f8910c4c3de0292a2b20933cbd34dae01b234812" target="_blank" style="color:var(--accent);font-size:11px">Tx 2: vault deposits &nearr;</a>
+    </div>`
     return
   }
 
@@ -516,37 +530,50 @@ function toggleView() {
 async function load() {
   try {
     const f = `creator_id: { _eq: "${CREATOR}" }`
-    const r = await Promise.all([
+    const [globalInfo, myAtoms, myTriples, counts] = await Promise.all([
+      fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: '{ atoms(limit: 1, order_by: { block_number: desc }) { block_number created_at } triples(limit: 1, order_by: { block_number: desc }) { block_number created_at } atoms_aggregate { aggregate { count } } triples_aggregate { aggregate { count } } }' }) }).then(r => r.json()).then(d => d.data),
       q(`{ atoms(limit: 100, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji creator_id } }`),
       q(`{ triples(limit: 200, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
       q(`{ atoms_aggregate(where: { ${f} }) { aggregate { count } } triples_aggregate(where: { ${f} }) { aggregate { count } } }`),
     ])
 
-    atoms = r[0].atoms || []
-    triples = (r[1].triples || []).map(t => ({
+    atoms = myAtoms.atoms || []
+    triples = (myTriples.triples || []).map(t => ({
       ...t,
       subject_id: t.subject?.term_id,
       predicate_id: t.predicate?.term_id,
       object_id: t.object?.term_id,
     }))
-    const ac = r[2]?.atoms_aggregate?.aggregate?.count ?? 0
-    const tc = r[2]?.triples_aggregate?.aggregate?.count ?? 0
+    const ac = counts?.atoms_aggregate?.aggregate?.count ?? 0
+    const tc = counts?.triples_aggregate?.aggregate?.count ?? 0
 
     document.getElementById('atomCount').textContent = ac
     document.getElementById('tripleCount').textContent = tc
+
     const dot = document.getElementById('statusDot')
     const label = document.getElementById('statusLabel')
+    const lagEl = document.getElementById('indexerLag')
+
+    const latestAtomBlock = parseInt(globalInfo?.atoms?.[0]?.block_number) || 0
+    const latestTripleBlock = parseInt(globalInfo?.triples?.[0]?.block_number) || 0
+    const latestIndexed = Math.max(latestAtomBlock, latestTripleBlock)
+    const globalAtomCount = globalInfo?.atoms_aggregate?.aggregate?.count ?? 0
+    const globalTripleCount = globalInfo?.triples_aggregate?.aggregate?.count ?? 0
+
     if (ac > 0 || tc > 0) {
-      dot.className = 'dot live'; label.textContent = 'Indexed'
+      dot.className = 'dot live'; label.textContent = 'Live'
     } else {
       dot.className = 'dot lag'; label.textContent = 'Indexer pending'
+    }
+    lagEl.style.display = 'inline'
+    if (latestIndexed > 0) {
+      lagEl.textContent = `Indexer: block ${latestIndexed.toLocaleString()} (${globalAtomCount.toLocaleString()} atoms, ${globalTripleCount.toLocaleString()} triples globally)`
     }
 
     buildGraph()
     renderSide()
 
     if (graphReady) {
-      // run simulation until settled, then draw
       for (let i = 0; i < 120; i++) simulate()
       draw()
     }
