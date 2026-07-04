@@ -13,7 +13,6 @@
     --surface: #141416;
     --surface2: #1c1c1f;
     --border: #27272a;
-    --border-hover: #3f3f46;
     --text: #fafafa;
     --text-secondary: #a1a1aa;
     --text-tertiary: #71717a;
@@ -23,8 +22,6 @@
     --green-bg: rgba(34,197,94,.1);
     --orange: #f59e0b;
     --orange-bg: rgba(245,158,11,.1);
-    --red: #ef4444;
-    --red-bg: rgba(239,68,68,.1);
     --radius: 8px;
     --radius-lg: 12px;
     --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -35,408 +32,542 @@
     font-family: var(--font);
     background: var(--bg); color: var(--text);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden; height: 100vh;
   }
 
-  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .app { display: flex; flex-direction: column; height: 100vh; }
 
-  /* Nav */
-  nav {
+  /* Header */
+  .topbar {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0; gap: 12px;
   }
-  nav .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  nav .logo svg { flex-shrink: 0; }
-  nav .logo h1 { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -.3px; }
-  nav .logo span { color: var(--text-secondary); font-weight: 400; }
-  nav .badge {
-    font-size: 12px; color: var(--text-tertiary); background: var(--surface2);
-    padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
-  }
-  nav .links { display: flex; align-items: center; gap: 16px; }
-  nav .links a {
-    font-size: 13px; color: var(--text-secondary); text-decoration: none;
-    transition: color .15s;
-  }
-  nav .links a:hover { color: var(--text); }
+  .topbar .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+  .topbar .logo svg { flex-shrink: 0; }
+  .topbar .logo h1 { font-size: 15px; font-weight: 600; color: var(--text); }
+  .topbar .logo span { color: var(--text-secondary); font-weight: 400; }
 
-  /* Hero */
-  .hero { margin-bottom: 48px; }
-  .hero h2 { font-size: 28px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 8px; }
-  .hero p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
-  .hero p a { color: var(--accent); text-decoration: none; }
-  .hero p a:hover { text-decoration: underline; }
+  .topbar .center { flex: 1; display: flex; align-items: center; gap: 16px; justify-content: center; }
+  .topbar .stats { display: flex; gap: 16px; }
+  .topbar .stats span { font-size: 12px; color: var(--text-tertiary); }
+  .topbar .stats strong { color: var(--text); font-weight: 600; }
 
-  /* Status bar */
-  .status-bar {
-    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
-    padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); margin-bottom: 32px;
-  }
-  .status-bar .stat { display: flex; align-items: baseline; gap: 6px; }
-  .status-bar .stat .num { font-size: 20px; font-weight: 700; }
-  .status-bar .stat .label { font-size: 13px; color: var(--text-tertiary); }
-  .status-bar .dot {
-    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
-  }
-  .status-bar .dot.live { background: var(--green); }
-  .status-bar .dot.lag { background: var(--orange); }
+  .topbar .right { display: flex; align-items: center; gap: 12px; }
+  .topbar .badge { font-size: 11px; color: var(--text-tertiary); background: var(--surface2); padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); }
+  .topbar .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .topbar .dot.live { background: var(--green); }
+  .topbar .dot.lag { background: var(--orange); }
 
-  /* Search */
-  .search-wrap { margin-bottom: 32px; }
-  .search-wrap input {
-    width: 100%; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 12px 16px; color: var(--text);
-    font-family: var(--font); font-size: 14px; outline: none;
-    transition: border-color .15s;
+  .topbar .icon-btn {
+    background: none; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 5px 10px; color: var(--text-secondary); cursor: pointer;
+    font-family: var(--font); font-size: 11px; transition: border-color .15s;
   }
-  .search-wrap input:focus { border-color: var(--accent); }
-  .search-wrap input::placeholder { color: var(--text-tertiary); }
+  .topbar .icon-btn:hover { border-color: var(--accent); color: var(--text); }
+  .topbar .icon-btn.active { border-color: var(--accent); color: var(--accent); }
 
-  /* Layout */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-
-  /* Cards */
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); overflow: hidden;
+  /* Search bar */
+  .searchbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
   }
-  .card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  .searchbar input {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 7px 12px; color: var(--text);
+    font-family: var(--font); font-size: 13px; outline: none;
+    transition: border-color .15s; max-width: 400px;
   }
-  .card-header h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-tertiary); }
-  .card-header .count { font-size: 12px; color: var(--text-tertiary); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
-  .card-body { padding: 4px 0; }
+  .searchbar input:focus { border-color: var(--accent); }
+  .searchbar input::placeholder { color: var(--text-tertiary); }
+  .searchbar .hint { font-size: 11px; color: var(--text-tertiary); }
 
-  /* List items */
+  /* Main area */
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  /* Graph canvas */
+  .graph-area { flex: 1; position: relative; }
+  .graph-area canvas { display: block; width: 100%; height: 100%; }
+  .graph-area .overlay {
+    position: absolute; top: 12px; left: 12px;
+    font-size: 11px; color: var(--text-tertiary);
+    pointer-events: none; user-select: none;
+  }
+
+  /* Side panel */
+  .side {
+    width: 340px; border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden;
+    flex-shrink: 0;
+  }
+  .side-header {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .side-body { flex: 1; overflow-y: auto; }
+
+  .side .empty-state {
+    text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 12px; line-height: 1.6;
+  }
+
+  /* List items in side panel */
   .list-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 20px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; cursor: pointer;
     transition: background .1s; border-bottom: 1px solid var(--border);
   }
   .list-item:last-child { border-bottom: none; }
   .list-item:hover { background: var(--surface2); }
-  .list-item .emoji { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+  .list-item .emoji { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
   .list-item .info { flex: 1; min-width: 0; }
-  .list-item .info .name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .list-item .info .meta { font-family: var(--mono); font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
-  .list-item .tag {
-    font-size: 11px; padding: 2px 7px; border-radius: 4px;
-    background: var(--surface2); color: var(--text-secondary); flex-shrink: 0;
-  }
+  .list-item .info .name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list-item .info .meta { font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); margin-top: 1px; }
+  .list-item .tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; background: var(--surface2); color: var(--text-secondary); flex-shrink: 0; }
 
-  /* Triple row */
+  /* Triple row in side panel */
   .triple-row {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 13px;
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+    padding: 7px 16px; border-bottom: 1px solid var(--border); font-size: 12px;
     cursor: pointer; transition: background .1s;
   }
   .triple-row:last-child { border-bottom: none; }
   .triple-row:hover { background: var(--surface2); }
   .triple-row .term { color: var(--accent); font-weight: 500; cursor: pointer; }
   .triple-row .term:hover { text-decoration: underline; }
-  .triple-row .arrow { color: var(--text-tertiary); font-size: 14px; }
-  .triple-row .pred {
-    color: var(--green); font-size: 11px; background: var(--green-bg);
-    padding: 1px 7px; border-radius: 4px; font-weight: 500;
-  }
+  .triple-row .arrow { color: var(--text-tertiary); font-size: 12px; }
+  .triple-row .pred { color: var(--green); font-size: 10px; background: var(--green-bg); padding: 1px 5px; border-radius: 3px; font-weight: 500; }
 
-  /* Detail view */
-  #detail { display: none; margin-bottom: 40px; }
-  .detail-top { margin-bottom: 20px; }
-  .detail-top .back {
+  /* Detail panel */
+  .detail-panel { padding: 16px; }
+  .detail-panel .back {
     background: none; border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 6px 14px; color: var(--text-secondary); cursor: pointer;
-    font-family: var(--font); font-size: 13px; transition: border-color .15s;
-    margin-bottom: 16px;
+    padding: 4px 10px; color: var(--text-secondary); cursor: pointer;
+    font-family: var(--font); font-size: 11px; margin-bottom: 12px;
   }
-  .detail-top .back:hover { border-color: var(--border-hover); color: var(--text); }
-  .detail-top h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  .detail-top .meta { display: flex; gap: 12px; flex-wrap: wrap; }
-  .detail-top .meta span {
-    font-size: 12px; color: var(--text-tertiary);
-    background: var(--surface2); padding: 3px 10px; border-radius: 4px;
-    font-family: var(--mono);
-  }
+  .detail-panel .back:hover { border-color: var(--accent); color: var(--text); }
+  .detail-panel h2 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .detail-panel .meta { font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); word-break: break-all; margin-bottom: 12px; }
+  .detail-panel .triple-row { padding: 7px 0; }
 
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 13px; }
-  .error-state { text-align: center; padding: 40px 20px; color: var(--red); font-size: 13px; }
-  .loading-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 13px; }
-  .spinner {
-    display: inline-block; width: 16px; height: 16px;
-    border: 2px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin .5s linear infinite;
+  .graph-tooltip {
+    position: absolute; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 12px; font-size: 12px;
+    pointer-events: none; display: none; z-index: 10;
+    max-width: 250px;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .graph-tooltip .tt-name { font-weight: 600; }
+  .graph-tooltip .tt-id { font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); }
 
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--border); padding: 24px 0; margin-top: 40px;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  .legend {
+    position: absolute; bottom: 12px; left: 12px;
+    display: flex; gap: 12px; font-size: 10px; color: var(--text-tertiary);
+    pointer-events: none; user-select: none;
   }
-  footer p { font-size: 13px; color: var(--text-tertiary); }
-  footer a { color: var(--text-secondary); text-decoration: none; font-size: 13px; }
-  footer a:hover { color: var(--text); }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend .swatch { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
   @media (max-width: 720px) {
-    .two-col { grid-template-columns: 1fr; }
-    nav { flex-direction: column; gap: 12px; align-items: flex-start; }
-    nav .links { width: 100%; }
-    .hero h2 { font-size: 22px; }
+    .side { width: 260px; }
+    .topbar { flex-wrap: wrap; }
+    .topbar .center { order: 3; width: 100%; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <nav>
+<div class="app">
+  <div class="topbar">
     <a href="/" class="logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="2" width="20" height="20" rx="6" fill="#3b82f6"/>
         <path d="M7 12l3 3 7-7" stroke="#0a0a0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <h1>Who Built <span>This</span></h1>
     </a>
-    <div class="links">
-      <a href="https://github.com/harishkotra/who-built-this" target="_blank">GitHub</a>
+    <div class="center">
+      <div class="stats">
+        <span>Atoms <strong id="atomCount">—</strong></span>
+        <span>Triples <strong id="tripleCount">—</strong></span>
+      </div>
+      <span><span class="dot" id="statusDot"></span><span id="statusLabel" style="font-size:11px;color:var(--text-tertiary)">Connecting</span></span>
+    </div>
+    <div class="right">
+      <button class="icon-btn" id="viewToggle" onclick="toggleView()">List</button>
+      <a href="https://github.com/harishkotra/who-built-this" target="_blank" class="icon-btn" style="text-decoration:none">GitHub</a>
       <span class="badge">Intuition Testnet</span>
     </div>
-  </nav>
-
-  <div class="hero">
-    <h2>Open Source Reputation Graph</h2>
-    <p>
-      Every GitHub repo, contributor, issue, PR, and npm package is published as an onchain
-      <strong style="color:var(--text)">atom</strong> on the Intuition blockchain.
-      Relationships between them — who contributed to what, who authored which PR, what a package depends on —
-      are published as <strong style="color:var(--text)">triples</strong>.
-      This explorer shows data published by the
-      <a href="https://github.com/harishkotra/who-built-this" target="_blank">Who Built This?</a> CLI tool.
-    </p>
   </div>
 
-  <div class="status-bar" id="statusBar">
-    <div class="stat"><span class="num" id="atomCount">—</span><span class="label">atoms</span></div>
-    <div class="stat"><span class="num" id="tripleCount">—</span><span class="label">triples</span></div>
-    <div class="stat">
-      <span class="dot" id="statusDot"></span>
-      <span class="label" id="statusLabel">Connecting</span>
-    </div>
+  <div class="searchbar">
+    <input id="searchInput" type="text" placeholder="Search by label or atom ID (0x...)" spellcheck="false" />
+    <span class="hint">Click a node to inspect</span>
   </div>
 
-  <div class="search-wrap">
-    <input id="searchInput" type="text" placeholder="Search by atom ID (0x...) or label name..." spellcheck="false" />
-  </div>
-
-  <div id="detail"></div>
-
-  <div class="two-col" id="dashboard">
-    <div class="card">
-      <div class="card-header">
-        <h3>Atoms</h3>
-        <span class="count" id="atomCountBadge">—</span>
+  <div class="main">
+    <div class="graph-area" id="graphArea">
+      <canvas id="graphCanvas"></canvas>
+      <div class="overlay" id="graphOverlay">&#9670; Reputation Graph</div>
+      <div class="graph-tooltip" id="tooltip"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#3b82f6"></span> Entity</span>
+        <span><span class="swatch" style="background:#22c55e"></span> Predicate</span>
       </div>
-      <div class="card-body" id="atomList"><div class="loading-state"><span class="spinner"></span></div></div>
     </div>
-    <div class="card">
-      <div class="card-header">
-        <h3>Triples</h3>
-        <span class="count" id="tripleCountBadge">—</span>
-      </div>
-      <div class="card-body" id="tripleList"><div class="loading-state"><span class="spinner"></span></div></div>
+
+    <div class="side" id="sidePanel">
+      <div class="side-header">Atoms &amp; Triples</div>
+      <div class="side-body" id="sideBody"><div class="empty-state">Loading graph data...</div></div>
     </div>
   </div>
-
-  <footer>
-    <p><a href="https://github.com/harishkotra/who-built-this" target="_blank">harishkotra/who-built-this</a></p>
-    <p>Powered by <a href="https://intuition.systems" target="_blank">Intuition</a> &middot; Testnet</p>
-  </footer>
 </div>
 
 <script>
 const API = 'https://testnet.intuition.sh/v1/graphql'
 const CREATOR = '0xA2c0CDd6882543884A89Ed97F8f2fa231661eE8E'
 
+let atoms = []
+let triples = []
+let graphView = true
+
 function q(query) {
   return fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
   }).then(r => r.json()).then(d => { if (d.errors) throw new Error(d.errors[0].message); return d.data })
 }
 
 function esc(s) { const e = document.createElement('div'); e.textContent = s; return e.innerHTML }
+function short(id) { if (!id || id.length < 16) return id || ''; return id.slice(0, 8) + '...' + id.slice(-6) }
 
-function short(id) {
-  if (!id || id.length < 16) return id || ''
-  return id.slice(0, 8) + '...' + id.slice(-6)
+/* ─── Force-directed graph ─── */
+const canvas = document.getElementById('graphCanvas')
+const ctx = canvas.getContext('2d')
+const tooltip = document.getElementById('tooltip')
+
+let nodes = []
+let edges = []
+let animId = null
+let dragNode = null
+let dragOffX = 0, dragOffY = 0
+let hoveredNode = null
+let graphReady = false
+
+const COLORS = {
+  person: '#3b82f6',
+  software: '#8b5cf6',
+  'software-application': '#f59e0b',
+  article: '#06b6d4',
+  company: '#ec4899',
+  'defined-term': '#22c55e',
+  default: '#6b7280',
 }
 
-function link(id, label) {
-  return `<span class="term" onclick="showAtom('${esc(id)}')">${esc(label || short(id))}</span>`
+function typeColor(type) { return COLORS[type] || COLORS.default }
+
+function resizeCanvas() {
+  const rect = canvas.parentElement.getBoundingClientRect()
+  canvas.width = rect.width * devicePixelRatio
+  canvas.height = rect.height * devicePixelRatio
+  canvas.style.width = rect.width + 'px'
+  canvas.style.height = rect.height + 'px'
+  ctx.scale(devicePixelRatio, devicePixelRatio)
 }
 
+function buildGraph() {
+  const W = canvas.width / devicePixelRatio || 800
+  const H = canvas.height / devicePixelRatio || 600
+  const cx = W / 2, cy = H / 2
+  const r = Math.min(W, H) * 0.32
+
+  nodes = atoms.map(a => ({
+    id: a.term_id, label: a.label, type: a.type, emoji: a.emoji || '',
+    x: cx + (Math.random() - 0.5) * r, y: cy + (Math.random() - 0.5) * r,
+    vx: 0, vy: 0, radius: a.type === 'defined-term' ? 16 : 22,
+  }))
+  const nodeMap = {}
+  nodes.forEach(n => nodeMap[n.id] = n)
+
+  edges = []
+  triples.forEach(t => {
+    const s = nodeMap[t.subject_id] || nodeMap[t.subject?.term_id]
+    const o = nodeMap[t.object_id] || nodeMap[t.object?.term_id]
+    if (s && o) edges.push({ source: s, target: o, label: t.predicate?.label || '' })
+  })
+
+  graphReady = nodes.length > 0
+}
+
+function simulate() {
+  const W = canvas.width / devicePixelRatio
+  const H = canvas.height / devicePixelRatio
+  const cx = W / 2, cy = H / 2
+  const reps = 0.08, spring = 0.004, damp = 0.85, gravity = 0.002
+  const ideal = 120
+
+  for (let i = 0; i < nodes.length; i++) {
+    const a = nodes[i]
+    // repulsion
+    for (let j = i + 1; j < nodes.length; j++) {
+      const b = nodes[j]
+      let dx = b.x - a.x, dy = b.y - a.y
+      let d = Math.sqrt(dx * dx + dy * dy) || 1
+      let force = reps / (d * d)
+      a.vx -= (dx / d) * force
+      a.vy -= (dy / d) * force
+      b.vx += (dx / d) * force
+      b.vy += (dy / d) * force
+    }
+    // gravity to center
+    a.vx += (cx - a.x) * gravity
+    a.vy += (cy - a.y) * gravity
+  }
+
+  for (const e of edges) {
+    const dx = e.target.x - e.source.x, dy = e.target.y - e.source.y
+    const d = Math.sqrt(dx * dx + dy * dy) || 1
+    const disp = d - ideal
+    const force = disp * spring
+    e.source.vx += (dx / d) * force
+    e.source.vy += (dy / d) * force
+    e.target.vx -= (dx / d) * force
+    e.target.vy -= (dy / d) * force
+  }
+
+  for (const n of nodes) {
+    n.vx *= damp; n.vy *= damp
+    n.x += n.vx; n.y += n.vy
+    n.x = Math.max(30, Math.min(W - 30, n.x))
+    n.y = Math.max(30, Math.min(H - 30, n.y))
+  }
+}
+
+function draw() {
+  const W = canvas.width / devicePixelRatio
+  const H = canvas.height / devicePixelRatio
+  ctx.clearRect(0, 0, W, H)
+
+  if (!graphReady) {
+    ctx.fillStyle = '#71717a'
+    ctx.font = '14px Inter, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('No graph data — waiting for indexer', W / 2, H / 2)
+    return
+  }
+
+  // edges
+  for (const e of edges) {
+    ctx.beginPath()
+    ctx.moveTo(e.source.x, e.source.y)
+    ctx.lineTo(e.target.x, e.target.y)
+    ctx.strokeStyle = hoveredNode && (e.source === hoveredNode || e.target === hoveredNode)
+      ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)'
+    ctx.lineWidth = hoveredNode && (e.source === hoveredNode || e.target === hoveredNode) ? 2 : 1
+    ctx.stroke()
+  }
+
+  // nodes
+  for (const n of nodes) {
+    const r = n === hoveredNode ? n.radius + 4 : n.radius
+    ctx.beginPath()
+    ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
+    ctx.fillStyle = typeColor(n.type)
+    ctx.globalAlpha = hoveredNode && n !== hoveredNode ? 0.3 : 0.9
+    ctx.fill()
+    ctx.globalAlpha = 1
+    ctx.strokeStyle = n === hoveredNode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)'
+    ctx.lineWidth = 2
+    ctx.stroke()
+  }
+
+  // labels
+  ctx.fillStyle = '#e4e6f0'
+  ctx.font = '11px Inter, sans-serif'
+  ctx.textAlign = 'center'
+  for (const n of nodes) {
+    if (!hoveredNode || n === hoveredNode || edges.some(e => (e.source === hoveredNode && e.target === n) || (e.target === hoveredNode && e.source === n))) {
+      ctx.fillStyle = n === hoveredNode ? '#fff' : 'rgba(228,230,240,0.7)'
+      ctx.fillText(n.label.length > 20 ? n.label.slice(0, 18) + '..' : n.label, n.x, n.y + n.radius + 14)
+    }
+  }
+}
+
+function tick() {
+  if (graphReady) {
+    simulate()
+    draw()
+  }
+  animId = requestAnimationFrame(tick)
+}
+
+/* ─── Mouse interaction ─── */
+function getNodeAt(mx, my) {
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i]
+    const dx = mx - n.x, dy = my - n.y
+    if (dx * dx + dy * dy < (n.radius + 8) * (n.radius + 8)) return n
+  }
+  return null
+}
+
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect()
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top
+  const n = getNodeAt(mx, my)
+  if (n) { dragNode = n; dragOffX = mx - n.x; dragOffY = my - n.y; n.vx = 0; n.vy = 0 }
+})
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect()
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top
+  if (dragNode) {
+    dragNode.x = mx - dragOffX; dragNode.y = my - dragOffY
+    return
+  }
+  const n = getNodeAt(mx, my)
+  hoveredNode = n
+  canvas.style.cursor = n ? 'pointer' : 'default'
+  if (n) {
+    tooltip.style.display = 'block'
+    tooltip.style.left = (e.clientX - canvas.parentElement.getBoundingClientRect().left + 12) + 'px'
+    tooltip.style.top = (e.clientY - canvas.parentElement.getBoundingClientRect().top - 10) + 'px'
+    tooltip.innerHTML = `<div class="tt-name">${esc(n.emoji)} ${esc(n.label)}</div><div class="tt-id">${esc(short(n.id))}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:2px">${esc(n.type)}</div>`
+  } else {
+    tooltip.style.display = 'none'
+  }
+})
+canvas.addEventListener('mouseup', e => {
+  if (dragNode) {
+    const rect = canvas.getBoundingClientRect()
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top
+    const n = getNodeAt(mx, my)
+    if (n && n === dragNode) {
+      showDetail(n.id)
+    }
+    dragNode = null
+  }
+})
+canvas.addEventListener('mouseleave', () => { hoveredNode = null; tooltip.style.display = 'none'; dragNode = null })
+
+/* ─── Side panel ─── */
+function renderSide() {
+  const body = document.getElementById('sideBody')
+  if (!atoms.length && !triples.length) {
+    body.innerHTML = '<div class="empty-state">No graph data yet. Publish a repo with <code>--publish</code>, then wait for the testnet indexer to catch up.<br><br>Transactions are confirmed on-chain at block 9357153 — the indexer lags behind.</div>'
+    return
+  }
+
+  let html = '<div class="side-header">Atoms</div>'
+  for (const a of atoms) {
+    html += `<div class="list-item" onclick="showDetail('${esc(a.term_id)}')">
+      <span class="emoji">${esc(a.emoji || '') || '&#9672;'}</span>
+      <div class="info"><div class="name">${esc(a.label)}</div><div class="meta">${short(a.term_id)}</div></div>
+      <span class="tag">${esc(a.type)}</span>
+    </div>`
+  }
+
+  html += '<div class="side-header" style="margin-top:8px">Triples</div>'
+  for (const t of triples) {
+    const s = t.subject, p = t.predicate, o = t.object
+    html += `<div class="triple-row">
+      <span class="term" onclick="event.stopPropagation();showDetail('${esc(s.term_id)}')">${esc(s.label || short(s.term_id))}</span>
+      <span class="arrow">&rarr;</span>
+      <span class="pred">${esc(p.label)}</span>
+      <span class="arrow">&rarr;</span>
+      <span class="term" onclick="event.stopPropagation();showDetail('${esc(o.term_id)}')">${esc(o.label || short(o.term_id))}</span>
+    </div>`
+  }
+
+  body.innerHTML = html
+}
+
+function showDetail(termId) {
+  const a = atoms.find(x => x.term_id === termId)
+  if (!a) return
+  const body = document.getElementById('sideBody')
+  const relTriples = triples.filter(t =>
+    t.subject_id === termId || t.object_id === termId || t.predicate_id === termId ||
+    t.subject?.term_id === termId || t.object?.term_id === termId || t.predicate?.term_id === termId
+  )
+  body.innerHTML = `
+    <div class="detail-panel">
+      <button class="back" onclick="renderSide();document.getElementById('graphOverlay').textContent='&#9670; Reputation Graph'">&#8592; Back</button>
+      <h2>${esc(a.emoji || '')} ${esc(a.label)}</h2>
+      <div class="meta">${esc(a.term_id)}</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">Type: ${esc(a.type)}</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:6px">TRIPLES (${relTriples.length})</div>
+      ${relTriples.length ? relTriples.map(t => {
+        const s = t.subject, p = t.predicate, o = t.object
+        return `<div class="triple-row"><span class="term" onclick="event.stopPropagation();showDetail('${esc(s.term_id)}')">${esc(s.label || short(s.term_id))}</span> <span class="arrow">&rarr;</span> <span class="pred">${esc(p.label)}</span> <span class="arrow">&rarr;</span> <span class="term" onclick="event.stopPropagation();showDetail('${esc(o.term_id)}')">${esc(o.label || short(o.term_id))}</span></div>`
+      }).join('') : '<div style="font-size:11px;color:var(--text-tertiary);padding:8px 0">No triples</div>'}
+    </div>
+  `
+  document.getElementById('graphOverlay').textContent = '▪ ' + a.label
+}
+
+/* ─── View toggle ─── */
+function toggleView() {
+  graphView = !graphView
+  document.getElementById('viewToggle').textContent = graphView ? 'List' : 'Graph'
+  document.querySelector('.graph-area').style.display = graphView ? 'block' : 'none'
+  if (!graphView) renderSide()
+}
+
+/* ─── Load ─── */
 async function load() {
   try {
     const f = `creator_id: { _eq: "${CREATOR}" }`
     const r = await Promise.all([
-      q(`{ atoms(limit: 20, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji } }`),
-      q(`{ triples(limit: 20, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
+      q(`{ atoms(limit: 100, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji creator_id } }`),
+      q(`{ triples(limit: 200, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
       q(`{ atoms_aggregate(where: { ${f} }) { aggregate { count } } triples_aggregate(where: { ${f} }) { aggregate { count } } }`),
     ])
 
-    const atoms = r[0].atoms || []
-    const triples = r[1].triples || []
+    atoms = r[0].atoms || []
+    triples = (r[1].triples || []).map(t => ({
+      ...t,
+      subject_id: t.subject?.term_id,
+      predicate_id: t.predicate?.term_id,
+      object_id: t.object?.term_id,
+    }))
     const ac = r[2]?.atoms_aggregate?.aggregate?.count ?? 0
     const tc = r[2]?.triples_aggregate?.aggregate?.count ?? 0
 
     document.getElementById('atomCount').textContent = ac
     document.getElementById('tripleCount').textContent = tc
-    document.getElementById('atomCountBadge').textContent = ac
-    document.getElementById('tripleCountBadge').textContent = tc
-
     const dot = document.getElementById('statusDot')
     const label = document.getElementById('statusLabel')
     if (ac > 0 || tc > 0) {
-      dot.className = 'dot live'
-      label.textContent = 'Data available'
+      dot.className = 'dot live'; label.textContent = 'Indexed'
     } else {
-      dot.className = 'dot lag'
-      label.textContent = 'Indexer pending'
+      dot.className = 'dot lag'; label.textContent = 'Indexer pending'
     }
 
-    renderAtoms(atoms)
-    renderTriples(triples)
+    buildGraph()
+    renderSide()
+
+    if (graphReady) {
+      // run simulation until settled, then draw
+      for (let i = 0; i < 120; i++) simulate()
+      draw()
+    }
   } catch (e) {
-    document.getElementById('atomList').innerHTML = `<div class="error-state">${esc(e.message)}</div>`
-    document.getElementById('tripleList').innerHTML = `<div class="error-state">${esc(e.message)}</div>`
-    document.getElementById('statusDot').className = 'dot lag'
-    document.getElementById('statusLabel').textContent = 'Error'
+    document.getElementById('sideBody').innerHTML = `<div class="empty-state">${esc(e.message)}</div>`
   }
 }
 
-function renderAtoms(atoms) {
-  const el = document.getElementById('atomList')
-  if (!atoms.length) { el.innerHTML = '<div class="empty-state">No atoms published yet — run <code>bun start ingest --repo owner/repo --publish</code></div>'; return }
-  el.innerHTML = atoms.map(a => `
-    <div class="list-item" onclick="showAtom('${esc(a.term_id)}')">
-      <span class="emoji">${esc(a.emoji || '') || '&#9672;'}</span>
-      <div class="info">
-        <div class="name">${esc(a.label)}</div>
-        <div class="meta">${short(a.term_id)}</div>
-      </div>
-      <span class="tag">${esc(a.type)}</span>
-    </div>
-  `).join('')
-}
-
-function renderTriples(triples) {
-  const el = document.getElementById('tripleList')
-  if (!triples.length) { el.innerHTML = '<div class="empty-state">No triples published yet</div>'; return }
-  el.innerHTML = triples.map(t => `
-    <div class="triple-row">
-      ${link(t.subject.term_id, t.subject.label)}
-      <span class="arrow">&rarr;</span>
-      <span class="pred">${esc(t.predicate.label)}</span>
-      <span class="arrow">&rarr;</span>
-      ${link(t.object.term_id, t.object.label)}
-    </div>
-  `).join('')
-}
-
-async function showAtom(termId) {
-  document.getElementById('dashboard').style.display = 'none'
-  const el = document.getElementById('detail'); el.style.display = 'block'
-  el.innerHTML = '<div class="loading-state"><span class="spinner"></span></div>'
-
-  try {
-    const f = `creator_id: { _eq: "${CREATOR}" }`
-    const r = await q(`{
-      atom: atoms(where: { term_id: { _eq: "${termId}" } }) { term_id label type emoji data }
-      as_subject: triples(where: { subject_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
-      as_predicate: triples(where: { predicate_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
-      as_object: triples(where: { object_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
-    }`)
-    const a = r.atom?.[0]
-    if (!a) { el.innerHTML = '<div class="error-state">Atom not found</div>'; return }
-
-    const triples = [
-      ...(r.as_subject || []).map(t => ({ ...t, r: 'subject' })),
-      ...(r.as_predicate || []).map(t => ({ ...t, r: 'predicate' })),
-      ...(r.as_object || []).map(t => ({ ...t, r: 'object' })),
-    ]
-
-    el.innerHTML = `
-      <div class="detail-top">
-        <button class="back" onclick="back()">&larr; Back</button>
-        <h2>${esc(a.emoji || '')} ${esc(a.label)}</h2>
-        <div class="meta">
-          <span>${esc(a.type)}</span>
-          <span>${esc(short(a.term_id))}</span>
-          <span style="font-size:10px">${esc(a.term_id)}</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3>Triples (${triples.length})</h3></div>
-        <div class="card-body">
-          ${triples.length ? triples.map(t => `
-            <div class="triple-row">
-              ${link(t.subject.term_id, t.subject.label)}
-              <span class="arrow">&rarr;</span>
-              <span class="pred">${esc(t.predicate.label)}</span>
-              <span class="arrow">&rarr;</span>
-              ${link(t.object.term_id, t.object.label)}
-            </div>
-          `).join('') : '<div class="empty-state">No triples reference this atom</div>'}
-        </div>
-      </div>
-    `
-  } catch (e) {
-    el.innerHTML = `<div class="error-state">${esc(e.message)}</div>`
-  }
-}
-
-function back() {
-  document.getElementById('detail').style.display = 'none'
-  document.getElementById('dashboard').style.display = 'grid'
-}
-
+window.addEventListener('resize', () => { resizeCanvas(); if (graphReady) draw() })
 document.getElementById('searchInput').addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return
   const q = this.value.trim()
   if (!q) return
-  if (q.startsWith('0x') && q.length >= 10) { showAtom(q); return }
-  searchByLabel(q)
+  if (q.startsWith('0x') && q.length >= 10) { showDetail(q); return }
+  const match = atoms.find(a => a.label.toLowerCase().includes(q.toLowerCase()))
+  if (match) showDetail(match.term_id)
 })
 
-async function searchByLabel(q) {
-  document.getElementById('dashboard').style.display = 'none'
-  const el = document.getElementById('detail'); el.style.display = 'block'
-  el.innerHTML = '<div class="loading-state"><span class="spinner"></span></div>'
-  try {
-    const r = await q(`{ atoms(limit: 20, where: { creator_id: { _eq: "${CREATOR}" }, label: { _ilike: "%${q}%" } }) { term_id label type emoji } }`)
-    if (!r.atoms || !r.atoms.length) {
-      el.innerHTML = `
-        <div class="detail-top"><button class="back" onclick="back()">&larr; Back</button></div>
-        <div class="error-state">No atoms matching "${esc(q)}"</div>`
-      return
-    }
-    el.innerHTML = `
-      <div class="detail-top"><button class="back" onclick="back()">&larr; Back</button></div>
-      <div class="card"><div class="card-header"><h3>Search: ${esc(q)} (${r.atoms.length})</h3></div>
-      <div class="card-body">${r.atoms.map(a => `
-        <div class="list-item" onclick="showAtom('${esc(a.term_id)}')">
-          <span class="emoji">${esc(a.emoji || '') || '&#9672;'}</span>
-          <div class="info"><div class="name">${esc(a.label)}</div><div class="meta">${short(a.term_id)}</div></div>
-          <span class="tag">${esc(a.type)}</span>
-        </div>
-      `).join('')}</div></div>`
-  } catch (e) {
-    el.innerHTML = `<div class="error-state">${esc(e.message)}</div>`
-  }
-}
-
+resizeCanvas()
 load()
+tick()
 </script>
 </body>
 </html>

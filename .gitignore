@@ -4,7 +4,6 @@
 
 # Dependencies
 node_modules/
-bun.lockb
 
 # Build / cache
 *.tsbuildinfo
@@ -48,3 +47,9 @@ lerna-debug.log*
 # Local registry data
 data/
 atom-registry.json
+
+# Vercel deploy output
+.vercel
+
+# Bun lockfile (package-lock.json is the canonical lockfile for this project)
+bun.lockb
