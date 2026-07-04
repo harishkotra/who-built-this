@@ -313,11 +313,13 @@ function buildGraph() {
   const W = canvas.width / devicePixelRatio || 800
   const H = canvas.height / devicePixelRatio || 600
   const cx = W / 2, cy = H / 2
-  const r = Math.min(W, H) * 0.32
 
-  nodes = atoms.map(a => ({
+  // circular initial layout
+  const circR = Math.min(W, H) * 0.42
+  nodes = atoms.map((a, i) => ({
     id: a.term_id, label: a.label, type: a.type, emoji: a.emoji || '',
-    x: cx + (Math.random() - 0.5) * r * 1.5, y: cy + (Math.random() - 0.5) * r * 1.5,
+    x: cx + circR * Math.cos(2 * Math.PI * i / atoms.length + (atoms.length % 2 === 0 ? 0.3 : 0)),
+    y: cy + circR * Math.sin(2 * Math.PI * i / atoms.length + (atoms.length % 2 === 0 ? 0.3 : 0)),
     vx: 0, vy: 0, radius: a.type === 'defined-term' ? 14 : 18,
   }))
   const nodeMap = {}
@@ -339,8 +341,8 @@ function simulate() {
   const W = canvas.width / devicePixelRatio
   const H = canvas.height / devicePixelRatio
   const cx = W / 2, cy = H / 2
-  const reps = 0.18, spring = 0.006, damp = 0.85, gravity = 0.001
-  const ideal = 180
+  const reps = 0.6, spring = 0.008, damp = 0.85, gravity = 0.0003
+  const ideal = 260
 
   for (let i = 0; i < nodes.length; i++) {
     const a = nodes[i]
@@ -649,7 +651,7 @@ async function load() {
     renderSide()
 
     if (graphReady) {
-      for (let i = 0; i < 200; i++) simulate()
+      for (let i = 0; i < 400; i++) simulate()
       draw()
     }
   } catch (e) {
@@ -663,7 +665,7 @@ async function load() {
       document.getElementById('statusLabel').textContent = 'GraphQL offline, using cached data'
       buildGraph()
       renderSide()
-      for (let i = 0; i < 200; i++) simulate()
+      for (let i = 0; i < 400; i++) simulate()
       draw()
     } else {
       document.getElementById('sideBody').innerHTML = `<div class="empty-state">${esc(e instanceof Error ? e.message : String(e))}</div>`
