@@ -226,10 +226,44 @@
 <script>
 const API = 'https://testnet.intuition.sh/v1/graphql'
 const CREATOR = '0xA2c0CDd6882543884A89Ed97F8f2fa231661eE8E'
+const RPC = 'https://testnet.rpc.intuition.systems/http'
+
+// Fallback on-chain data from tx receipts (indexer is stuck)
+const FALLBACK_DATA = {"atoms":[{"term_id":"0xa4ecbecb9f9cc868ab349f370ab85f86c0a2f4c68cad90e031599bf03937cb20","label":"contributedTo"},{"term_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","label":"authored"},{"term_id":"0x127880cc7cf6361e97ed9d629eced6ab06d2b05b5c18dba93953c53ac1eb007e","label":"mergedBy"},{"term_id":"0xdd0dd7eed5efa7ee0addd61ba992299d7ff3f983b9311bb0cd87953e2e5fa7ab","label":"hasPackage"},{"term_id":"0x840dece2a0bc379d7c6e2955e41bfa60d8dacd050aa2855b93ab497f6393f5eb","label":"maintainedBy"},{"term_id":"0xdc5a9ea0e1921ebbe8044f76429dc01a772223a07b3733dea08565b2852affde","label":"worksAt"},{"term_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","label":"harishkotra"},{"term_id":"0x524d4c4c6543598a2bcb9e266d6537270c409af8d656fb0100585a959e36b3f0","label":"agent-office"},{"term_id":"0xa79de8e200cafc13fa88246f7523a9c4ef1d5128d301a3713d889d288bb56281","label":"agent-office (npm)"},{"term_id":"0xdfe53a977438a652072e1766d0352ad6c7fcd125af4478f3b60ad58e1fd5d982","label":"harishkotra (org)"},{"term_id":"0x9a3cd8ac2178ebfa18659c8d79b9ac2ebd1d7d5a5d7aab99f460ca8fcf6f2f59","label":"PR #1: sendExistingAgents fires before webview ready"},{"term_id":"0x4a72adfade024de93cd457379fed0229e6b62ca0c87675371089d1112e24587e","label":"ISSUE: adoptTerminalForFile doesn't add file to knownJsonl"},{"term_id":"0x2d7082d0c051f7adc4cc2a185ce5480a63d8fa75840c42e94aff8ad447cfe65e","label":"ISSUE: removeAgent doesn't remove file from knownJsonlFiles"},{"term_id":"0x5384cfaf2f7c9dfb4e35ab66881b5db1edfd662762a144a34be83039ff21ff83","label":"ISSUE: reassignAgentToFile doesn't add file to knownJsonl"},{"term_id":"0x4f6f50796d4e482053aab9dd1b46349db2392fa7768ac02785b62bd1baf42994","label":"ISSUE: markOwnWrite race condition skips legitimate writes"},{"term_id":"0xb6664453ac98141627804a7367aa80fdf0b40e9d36e60a7dcc194a10cf2e0559","label":"PR: properly track knownJsonlFiles on reassign and remove"},{"term_id":"0x8840ef02aa53c9e984e41694d572dce7c039c2f5e6f4f1a1d93242938658a9c6","label":"PR: replace boolean skip flag with mtime matching in watcher"},{"term_id":"0xbad058f7dffed11858e3d89135372c52132b61d165acde25ea1b5d04365ecc83","label":"Release v0.0.2: viral mode, recap export, relationship graph"}],"triples":[{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xa4ecbecb9f9cc868ab349f370ab85f86c0a2f4c68cad90e031599bf03937cb20","object_id":"0x524d4c4c6543598a2bcb9e266d6537270c409af8d656fb0100585a959e36b3f0"},{"subject_id":"0x524d4c4c6543598a2bcb9e266d6537270c409af8d656fb0100585a959e36b3f0","predicate_id":"0x840dece2a0bc379d7c6e2955e41bfa60d8dacd050aa2855b93ab497f6393f5eb","object_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e"},{"subject_id":"0x524d4c4c6543598a2bcb9e266d6537270c409af8d656fb0100585a959e36b3f0","predicate_id":"0xdd0dd7eed5efa7ee0addd61ba992299d7ff3f983b9311bb0cd87953e2e5fa7ab","object_id":"0xa79de8e200cafc13fa88246f7523a9c4ef1d5128d301a3713d889d288bb56281"},{"subject_id":"0xdfe53a977438a652072e1766d0352ad6c7fcd125af4478f3b60ad58e1fd5d982","predicate_id":"0xdc5a9ea0e1921ebbe8044f76429dc01a772223a07b3733dea08565b2852affde","object_id":"0x524d4c4c6543598a2bcb9e266d6537270c409af8d656fb0100585a959e36b3f0"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x9a3cd8ac2178ebfa18659c8d79b9ac2ebd1d7d5a5d7aab99f460ca8fcf6f2f59"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x4a72adfade024de93cd457379fed0229e6b62ca0c87675371089d1112e24587e"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x2d7082d0c051f7adc4cc2a185ce5480a63d8fa75840c42e94aff8ad447cfe65e"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x5384cfaf2f7c9dfb4e35ab66881b5db1edfd662762a144a34be83039ff21ff83"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x4f6f50796d4e482053aab9dd1b46349db2392fa7768ac02785b62bd1baf42994"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0xb6664453ac98141627804a7367aa80fdf0b40e9d36e60a7dcc194a10cf2e0559"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0x8840ef02aa53c9e984e41694d572dce7c039c2f5e6f4f1a1d93242938658a9c6"},{"subject_id":"0xafabe795d861cdc5964234678cfbd86a7bd834e863281f7a3d202091286ae20e","predicate_id":"0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0","object_id":"0xbad058f7dffed11858e3d89135372c52132b61d165acde25ea1b5d04365ecc83"}]}
+
+const FALLBACK_PREDICATES = {
+  '0xa4ecbecb9f9cc868ab349f370ab85f86c0a2f4c68cad90e031599bf03937cb20': 'contributedTo',
+  '0xcb7feefa0414c4379888d38daedf01635f4e1ea56417d0edb501278fcc2134d0': 'authored',
+  '0x127880cc7cf6361e97ed9d629eced6ab06d2b05b5c18dba93953c53ac1eb007e': 'mergedBy',
+  '0xdd0dd7eed5efa7ee0addd61ba992299d7ff3f983b9311bb0cd87953e2e5fa7ab': 'hasPackage',
+  '0x840dece2a0bc379d7c6e2955e41bfa60d8dacd050aa2855b93ab497f6393f5eb': 'maintainedBy',
+  '0xdc5a9ea0e1921ebbe8044f76429dc01a772223a07b3733dea08565b2852affde': 'worksAt',
+}
+
+function inferAtomType(label) {
+  if (label.startsWith('PR') || label.startsWith('ISSUE') || label.startsWith('Release') || label.startsWith('fix:') || label.startsWith('MEDIUM') || label.startsWith('HIGH') || label.startsWith('CRITICAL')) return 'article'
+  if (label.includes('(org)') || label === 'harishkotra') return 'person'
+  if (label.includes('(npm)')) return 'software-application'
+  if (label === 'agent-office') return 'software'
+  if (Object.values(FALLBACK_PREDICATES).includes(label)) return 'defined-term'
+  return 'default'
+}
+
+function inferAtomEmoji(label) {
+  if (label.startsWith('PR') || label.startsWith('fix:') || label.startsWith('Release')) return '\u{1F504}'
+  if (label.startsWith('ISSUE') || label.startsWith('MEDIUM') || label.startsWith('HIGH') || label.startsWith('CRITICAL')) return '\u{26A0}\u{FE0F}'
+  if (label.includes('(org)')) return '\u{1F3E2}'
+  if (label === 'harishkotra') return '\u{1F464}'
+  if (label.includes('(npm)')) return '\u{1F4E6}'
+  if (label === 'agent-office') return '\u{1F4C1}'
+  if (Object.values(FALLBACK_PREDICATES).includes(label)) return '\u{1F517}'
+  return ''
+}
 
 let atoms = []
 let triples = []
 let graphView = true
+let usingFallback = false
 
 function q(query) {
   return fetch(API, {
@@ -293,7 +327,9 @@ function buildGraph() {
   triples.forEach(t => {
     const s = nodeMap[t.subject_id] || nodeMap[t.subject?.term_id]
     const o = nodeMap[t.object_id] || nodeMap[t.object?.term_id]
-    if (s && o) edges.push({ source: s, target: o, label: t.predicate?.label || '' })
+    const predId = t.predicate_id || t.predicate?.term_id
+    const predLabel = t.predicate?.label || FALLBACK_PREDICATES[predId] || ''
+    if (s && o) edges.push({ source: s, target: o, label: predLabel, predicate_id: predId })
   })
 
   graphReady = nodes.length > 0
@@ -449,6 +485,15 @@ canvas.addEventListener('mouseup', e => {
 })
 canvas.addEventListener('mouseleave', () => { hoveredNode = null; tooltip.style.display = 'none'; dragNode = null })
 
+function resolveAtomLabel(id) {
+  const a = atoms.find(x => x.term_id === id)
+  return a ? a.label : short(id)
+}
+
+function resolvePredLabel(id) {
+  return FALLBACK_PREDICATES[id] || short(id)
+}
+
 /* ─── Side panel ─── */
 function renderSide() {
   const body = document.getElementById('sideBody')
@@ -465,7 +510,7 @@ function renderSide() {
       Gap: <strong>${behind} blocks</strong> &mdash; this is an Intuition testnet infrastructure issue.<br><br>
       Verify on-chain:<br>
       <a href="https://testnet.explorer.intuition.systems/tx/0x162792250a34aceab00a407e82202bd6f20c88a61c1bc877d5b3b09a1821b2a7" target="_blank" style="color:var(--accent);font-size:11px">Tx 1: 6 predicate atoms &nearr;</a><br>
-      <a href="https://testnet.explorer.intuition.systems/tx/0x99e83a9d182cbaa42e8e3698f8910c4c3de0292a2b20933cbd34dae01b234812" target="_blank" style="color:var(--accent);font-size:11px">Tx 2: vault deposits &nearr;</a>
+      <a href="https://testnet.explorer.intuition.systems/tx/0x99e83a9d182cbaa42e8e3698f8910c4c3de0292a2b20933cbd34dae01b234812" target="_blank" style="color:var(--accent);font-size:11px">Tx 2: 12 triples &nearr;</a>
     </div>`
     return
   }
@@ -481,13 +526,15 @@ function renderSide() {
 
   html += '<div class="side-header" style="margin-top:8px">Triples</div>'
   for (const t of triples) {
-    const s = t.subject, p = t.predicate, o = t.object
+    const s = t.subject ? t.subject : { term_id: t.subject_id }
+    const p = t.predicate ? t.predicate : { term_id: t.predicate_id, label: resolvePredLabel(t.predicate_id) }
+    const o = t.object ? t.object : { term_id: t.object_id }
     html += `<div class="triple-row">
-      <span class="term" onclick="event.stopPropagation();showDetail('${esc(s.term_id)}')">${esc(s.label || short(s.term_id))}</span>
+      <span class="term" onclick="event.stopPropagation();showDetail('${esc(s.term_id)}')">${esc(resolveAtomLabel(s.term_id))}</span>
       <span class="arrow">&rarr;</span>
-      <span class="pred">${esc(p.label)}</span>
+      <span class="pred">${esc(p.label || resolvePredLabel(p.term_id))}</span>
       <span class="arrow">&rarr;</span>
-      <span class="term" onclick="event.stopPropagation();showDetail('${esc(o.term_id)}')">${esc(o.label || short(o.term_id))}</span>
+      <span class="term" onclick="event.stopPropagation();showDetail('${esc(o.term_id)}')">${esc(resolveAtomLabel(o.term_id))}</span>
     </div>`
   }
 
@@ -502,17 +549,23 @@ function showDetail(termId) {
     t.subject_id === termId || t.object_id === termId || t.predicate_id === termId ||
     t.subject?.term_id === termId || t.object?.term_id === termId || t.predicate?.term_id === termId
   )
+  const emoji = inferAtomEmoji(a.label)
   body.innerHTML = `
     <div class="detail-panel">
       <button class="back" onclick="renderSide();document.getElementById('graphOverlay').textContent='&#9670; Reputation Graph'">&#8592; Back</button>
-      <h2>${esc(a.emoji || '')} ${esc(a.label)}</h2>
+      <h2>${emoji ? emoji + ' ' : ''}${esc(a.label)}</h2>
       <div class="meta">${esc(a.term_id)}</div>
       <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">Type: ${esc(a.type)}</div>
-      <div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:6px">TRIPLES (${relTriples.length})</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:6px">RELATIONS (${relTriples.length})</div>
       ${relTriples.length ? relTriples.map(t => {
-        const s = t.subject, p = t.predicate, o = t.object
-        return `<div class="triple-row"><span class="term" onclick="event.stopPropagation();showDetail('${esc(s.term_id)}')">${esc(s.label || short(s.term_id))}</span> <span class="arrow">&rarr;</span> <span class="pred">${esc(p.label)}</span> <span class="arrow">&rarr;</span> <span class="term" onclick="event.stopPropagation();showDetail('${esc(o.term_id)}')">${esc(o.label || short(o.term_id))}</span></div>`
-      }).join('') : '<div style="font-size:11px;color:var(--text-tertiary);padding:8px 0">No triples</div>'}
+        const si = t.subject_id || t.subject?.term_id
+        const pi = t.predicate_id || t.predicate?.term_id
+        const oi = t.object_id || t.object?.term_id
+        const sl = t.subject?.label || resolveAtomLabel(si)
+        const pl = t.predicate?.label || resolvePredLabel(pi)
+        const ol = t.object?.label || resolveAtomLabel(oi)
+        return `<div class="triple-row"><span class="term" onclick="event.stopPropagation();showDetail('${esc(si)}')">${esc(sl)}</span> <span class="arrow">&rarr;</span> <span class="pred">${esc(pl)}</span> <span class="arrow">&rarr;</span> <span class="term" onclick="event.stopPropagation();showDetail('${esc(oi)}')">${esc(ol)}</span></div>`
+      }).join('') : '<div style="font-size:11px;color:var(--text-tertiary);padding:8px 0">No relations</div>'}
     </div>
   `
   document.getElementById('graphOverlay').textContent = '▪ ' + a.label
@@ -529,13 +582,17 @@ function toggleView() {
 /* ─── Load ─── */
 async function load() {
   try {
+    const globalInfo = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: '{ atoms(limit: 1, order_by: { block_number: desc }) { block_number created_at } triples(limit: 1, order_by: { block_number: desc }) { block_number created_at } atoms_aggregate { aggregate { count } } triples_aggregate { aggregate { count } } }' }) }).then(r => r.json()).then(d => d.data).catch(() => null)
+
     const f = `creator_id: { _eq: "${CREATOR}" }`
-    const [globalInfo, myAtoms, myTriples, counts] = await Promise.all([
-      fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: '{ atoms(limit: 1, order_by: { block_number: desc }) { block_number created_at } triples(limit: 1, order_by: { block_number: desc }) { block_number created_at } atoms_aggregate { aggregate { count } } triples_aggregate { aggregate { count } } }' }) }).then(r => r.json()).then(d => d.data),
-      q(`{ atoms(limit: 100, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji creator_id } }`),
-      q(`{ triples(limit: 200, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
-      q(`{ atoms_aggregate(where: { ${f} }) { aggregate { count } } triples_aggregate(where: { ${f} }) { aggregate { count } } }`),
-    ])
+    let [myAtoms, myTriples, counts] = [{ atoms: [] }, { triples: [] }, null]
+    try {
+      ;[myAtoms, myTriples, counts] = await Promise.all([
+        q(`{ atoms(limit: 100, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji creator_id } }`),
+        q(`{ triples(limit: 200, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
+        q(`{ atoms_aggregate(where: { ${f} }) { aggregate { count } } triples_aggregate(where: { ${f} }) { aggregate { count } } }`),
+      ])
+    } catch (e) {}
 
     atoms = myAtoms.atoms || []
     triples = (myTriples.triples || []).map(t => ({
@@ -547,27 +604,45 @@ async function load() {
     const ac = counts?.atoms_aggregate?.aggregate?.count ?? 0
     const tc = counts?.triples_aggregate?.aggregate?.count ?? 0
 
-    document.getElementById('atomCount').textContent = ac
-    document.getElementById('tripleCount').textContent = tc
+    usingFallback = ac === 0 && tc === 0 && FALLBACK_DATA.atoms.length > 0
+    if (usingFallback) {
+      atoms = FALLBACK_DATA.atoms.map(a => ({
+        ...a,
+        type: inferAtomType(a.label),
+        emoji: inferAtomEmoji(a.label),
+      }))
+      triples = FALLBACK_DATA.triples.map(t => ({
+        subject_id: t.subject_id,
+        predicate_id: t.predicate_id,
+        object_id: t.object_id,
+      }))
+    }
+
+    document.getElementById('atomCount').textContent = usingFallback ? atoms.length : ac
+    document.getElementById('tripleCount').textContent = usingFallback ? triples.length : tc
 
     const dot = document.getElementById('statusDot')
     const label = document.getElementById('statusLabel')
     const lagEl = document.getElementById('indexerLag')
 
-    const latestAtomBlock = parseInt(globalInfo?.atoms?.[0]?.block_number) || 0
-    const latestTripleBlock = parseInt(globalInfo?.triples?.[0]?.block_number) || 0
-    const latestIndexed = Math.max(latestAtomBlock, latestTripleBlock)
-    const globalAtomCount = globalInfo?.atoms_aggregate?.aggregate?.count ?? 0
-    const globalTripleCount = globalInfo?.triples_aggregate?.aggregate?.count ?? 0
-
-    if (ac > 0 || tc > 0) {
-      dot.className = 'dot live'; label.textContent = 'Live'
+    if (usingFallback) {
+      dot.className = 'dot lag'
+      label.textContent = 'Cached on-chain data'
+    } else if (ac > 0 || tc > 0) {
+      dot.className = 'dot live'
+      label.textContent = 'Live'
     } else {
-      dot.className = 'dot lag'; label.textContent = 'Indexer pending'
+      dot.className = 'dot lag'
+      label.textContent = 'No data'
     }
     lagEl.style.display = 'inline'
-    if (latestIndexed > 0) {
-      lagEl.textContent = `Indexer: block ${latestIndexed.toLocaleString()} (${globalAtomCount.toLocaleString()} atoms, ${globalTripleCount.toLocaleString()} triples globally)`
+    const latestAtomBlock = parseInt(globalInfo?.atoms?.[0]?.block_number) || 0
+    if (usingFallback) {
+      lagEl.textContent = latestAtomBlock > 0 ? `Indexer stuck at block ${latestAtomBlock.toLocaleString()} — showing ${atoms.length} atoms parsed directly from tx receipts` : 'Showing data parsed directly from on-chain transaction receipts'
+    } else if (latestAtomBlock > 0) {
+      const globalAtomCount = globalInfo?.atoms_aggregate?.aggregate?.count ?? 0
+      const globalTripleCount = globalInfo?.triples_aggregate?.aggregate?.count ?? 0
+      lagEl.textContent = `Indexer: block ${latestAtomBlock.toLocaleString()} (${globalAtomCount.toLocaleString()} atoms, ${globalTripleCount.toLocaleString()} triples globally)`
     }
 
     buildGraph()
@@ -578,7 +653,21 @@ async function load() {
       draw()
     }
   } catch (e) {
-    document.getElementById('sideBody').innerHTML = `<div class="empty-state">${esc(e.message)}</div>`
+    if (FALLBACK_DATA.atoms.length > 0) {
+      usingFallback = true
+      atoms = FALLBACK_DATA.atoms.map(a => ({ ...a, type: inferAtomType(a.label), emoji: inferAtomEmoji(a.label) }))
+      triples = FALLBACK_DATA.triples
+      document.getElementById('atomCount').textContent = atoms.length
+      document.getElementById('tripleCount').textContent = triples.length
+      document.getElementById('statusDot').className = 'dot lag'
+      document.getElementById('statusLabel').textContent = 'GraphQL offline, using cached data'
+      buildGraph()
+      renderSide()
+      for (let i = 0; i < 120; i++) simulate()
+      draw()
+    } else {
+      document.getElementById('sideBody').innerHTML = `<div class="empty-state">${esc(e instanceof Error ? e.message : String(e))}</div>`
+    }
   }
 }
 
