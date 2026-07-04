@@ -317,8 +317,8 @@ function buildGraph() {
 
   nodes = atoms.map(a => ({
     id: a.term_id, label: a.label, type: a.type, emoji: a.emoji || '',
-    x: cx + (Math.random() - 0.5) * r, y: cy + (Math.random() - 0.5) * r,
-    vx: 0, vy: 0, radius: a.type === 'defined-term' ? 16 : 22,
+    x: cx + (Math.random() - 0.5) * r * 1.5, y: cy + (Math.random() - 0.5) * r * 1.5,
+    vx: 0, vy: 0, radius: a.type === 'defined-term' ? 14 : 18,
   }))
   const nodeMap = {}
   nodes.forEach(n => nodeMap[n.id] = n)
@@ -339,8 +339,8 @@ function simulate() {
   const W = canvas.width / devicePixelRatio
   const H = canvas.height / devicePixelRatio
   const cx = W / 2, cy = H / 2
-  const reps = 0.08, spring = 0.004, damp = 0.85, gravity = 0.002
-  const ideal = 120
+  const reps = 0.18, spring = 0.006, damp = 0.85, gravity = 0.001
+  const ideal = 180
 
   for (let i = 0; i < nodes.length; i++) {
     const a = nodes[i]
@@ -649,7 +649,7 @@ async function load() {
     renderSide()
 
     if (graphReady) {
-      for (let i = 0; i < 120; i++) simulate()
+      for (let i = 0; i < 200; i++) simulate()
       draw()
     }
   } catch (e) {
@@ -663,7 +663,7 @@ async function load() {
       document.getElementById('statusLabel').textContent = 'GraphQL offline, using cached data'
       buildGraph()
       renderSide()
-      for (let i = 0; i < 120; i++) simulate()
+      for (let i = 0; i < 200; i++) simulate()
       draw()
     } else {
       document.getElementById('sideBody').innerHTML = `<div class="empty-state">${esc(e instanceof Error ? e.message : String(e))}</div>`
