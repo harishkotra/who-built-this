@@ -4,150 +4,260 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Who Built This? — Reputation Graph Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d2e;
-    --surface2: #242840;
-    --border: #2d3154;
-    --text: #e4e6f0;
-    --muted: #888cad;
-    --accent: #6c5ce7;
-    --accent2: #a29bfe;
-    --green: #00cec9;
-    --orange: #fdcb6e;
-    --red: #ff7675;
-    --radius: 10px;
+    --bg: #0a0a0b;
+    --surface: #141416;
+    --surface2: #1c1c1f;
+    --border: #27272a;
+    --border-hover: #3f3f46;
+    --text: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #71717a;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,.1);
+    --orange: #f59e0b;
+    --orange-bg: rgba(245,158,11,.1);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,.1);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg); color: var(--text); line-height: 1.5;
-  }
-  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-  header {
-    border-bottom: 1px solid var(--border); padding: 16px 0; margin-bottom: 28px;
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  }
-  header h1 { font-size: 22px; font-weight: 700; }
-  header h1 span { color: var(--accent2); }
-  header .sub { font-size: 13px; color: var(--muted); }
-  header .pill {
-    background: var(--surface2); border: 1px solid var(--border); border-radius: 20px;
-    padding: 4px 14px; font-size: 12px; color: var(--muted);
+    font-family: var(--font);
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  .search-bar {
-    display: flex; gap: 8px; margin-bottom: 28px;
-  }
-  .search-bar input {
-    flex: 1; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 10px 16px; color: var(--text);
-    font-size: 14px; outline: none; transition: border-color .2s;
-  }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: var(--muted); }
-  .search-bar button {
-    background: var(--accent); border: none; border-radius: var(--radius);
-    padding: 10px 20px; color: #fff; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: opacity .2s;
-  }
-  .search-bar button:hover { opacity: .85; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  /* Nav */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+  }
+  nav .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  nav .logo svg { flex-shrink: 0; }
+  nav .logo h1 { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -.3px; }
+  nav .logo span { color: var(--text-secondary); font-weight: 400; }
+  nav .badge {
+    font-size: 12px; color: var(--text-tertiary); background: var(--surface2);
+    padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
+  }
+  nav .links { display: flex; align-items: center; gap: 16px; }
+  nav .links a {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    transition: color .15s;
+  }
+  nav .links a:hover { color: var(--text); }
 
+  /* Hero */
+  .hero { margin-bottom: 48px; }
+  .hero h2 { font-size: 28px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 8px; }
+  .hero p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
+  .hero p a { color: var(--accent); text-decoration: none; }
+  .hero p a:hover { text-decoration: underline; }
+
+  /* Status bar */
+  .status-bar {
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); margin-bottom: 32px;
+  }
+  .status-bar .stat { display: flex; align-items: baseline; gap: 6px; }
+  .status-bar .stat .num { font-size: 20px; font-weight: 700; }
+  .status-bar .stat .label { font-size: 13px; color: var(--text-tertiary); }
+  .status-bar .dot {
+    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+  }
+  .status-bar .dot.live { background: var(--green); }
+  .status-bar .dot.lag { background: var(--orange); }
+
+  /* Search */
+  .search-wrap { margin-bottom: 32px; }
+  .search-wrap input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 12px 16px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none;
+    transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--text-tertiary); }
+
+  /* Layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+
+  /* Cards */
   .card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
+    border-radius: var(--radius-lg); overflow: hidden;
   }
-  .card h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--accent2); }
-  .card .count { font-size: 28px; font-weight: 700; }
-
-  .atom-list, .triple-list { list-style: none; }
-  .atom-list li, .triple-list li {
-    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
   }
-  .atom-list li:last-child, .triple-list li:last-child { border: none; }
-  .atom-id { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--muted); word-break: break-all; }
-  .atom-label { font-weight: 500; }
-  .atom-type { display: inline-block; background: var(--surface2); border-radius: 4px; padding: 1px 8px; font-size: 11px; color: var(--muted); }
-  .rel { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; }
-  .rel .term { color: var(--accent2); cursor: pointer; font-weight: 500; }
-  .rel .term:hover { text-decoration: underline; }
-  .rel .arrow { color: var(--muted); font-size: 16px; }
-  .rel .pred { color: var(--green); font-size: 11px; background: rgba(0,206,201,.1); padding: 1px 8px; border-radius: 4px; }
+  .card-header h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-tertiary); }
+  .card-header .count { font-size: 12px; color: var(--text-tertiary); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
+  .card-body { padding: 4px 0; }
 
-  .loading { text-align: center; padding: 40px; color: var(--muted); }
-  .loading::after { content: ''; display: inline-block; width: 20px; height: 20px; margin-left: 8px;
-    border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error { color: var(--red); text-align: center; padding: 20px; }
-  .empty { color: var(--muted); text-align: center; padding: 20px; font-size: 13px; }
+  /* List items */
+  .list-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer;
+    transition: background .1s; border-bottom: 1px solid var(--border);
+  }
+  .list-item:last-child { border-bottom: none; }
+  .list-item:hover { background: var(--surface2); }
+  .list-item .emoji { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+  .list-item .info { flex: 1; min-width: 0; }
+  .list-item .info .name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list-item .info .meta { font-family: var(--mono); font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
+  .list-item .tag {
+    font-size: 11px; padding: 2px 7px; border-radius: 4px;
+    background: var(--surface2); color: var(--text-secondary); flex-shrink: 0;
+  }
 
-  .detail-header { margin-bottom: 20px; }
-  .detail-header h2 { font-size: 20px; }
-  .detail-header .meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; color: var(--muted); }
-  .detail-header .meta span { background: var(--surface2); padding: 2px 10px; border-radius: 4px; }
-
-  .triple-graph { display: flex; flex-direction: column; gap: 10px; }
+  /* Triple row */
   .triple-row {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 10px 14px; background: var(--surface2); border-radius: var(--radius); font-size: 13px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 13px;
+    cursor: pointer; transition: background .1s;
+  }
+  .triple-row:last-child { border-bottom: none; }
+  .triple-row:hover { background: var(--surface2); }
+  .triple-row .term { color: var(--accent); font-weight: 500; cursor: pointer; }
+  .triple-row .term:hover { text-decoration: underline; }
+  .triple-row .arrow { color: var(--text-tertiary); font-size: 14px; }
+  .triple-row .pred {
+    color: var(--green); font-size: 11px; background: var(--green-bg);
+    padding: 1px 7px; border-radius: 4px; font-weight: 500;
   }
 
-  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  /* Detail view */
+  #detail { display: none; margin-bottom: 40px; }
+  .detail-top { margin-bottom: 20px; }
+  .detail-top .back {
+    background: none; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 6px 14px; color: var(--text-secondary); cursor: pointer;
+    font-family: var(--font); font-size: 13px; transition: border-color .15s;
+    margin-bottom: 16px;
+  }
+  .detail-top .back:hover { border-color: var(--border-hover); color: var(--text); }
+  .detail-top h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .detail-top .meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .detail-top .meta span {
+    font-size: 12px; color: var(--text-tertiary);
+    background: var(--surface2); padding: 3px 10px; border-radius: 4px;
+    font-family: var(--mono);
+  }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 13px; }
+  .error-state { text-align: center; padding: 40px 20px; color: var(--red); font-size: 13px; }
+  .loading-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 13px; }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .5s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border); padding: 24px 0; margin-top: 40px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  footer p { font-size: 13px; color: var(--text-tertiary); }
+  footer a { color: var(--text-secondary); text-decoration: none; font-size: 13px; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+    nav { flex-direction: column; gap: 12px; align-items: flex-start; }
+    nav .links { width: 100%; }
+    .hero h2 { font-size: 22px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
-  <header>
-    <div>
-      <h1><span>&#9670;</span> Who Built This?</h1>
-      <div class="sub">Open Source Reputation Graph on Intuition</div>
+  <nav>
+    <a href="/" class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="2" width="20" height="20" rx="6" fill="#3b82f6"/>
+        <path d="M7 12l3 3 7-7" stroke="#0a0a0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1>Who Built <span>This</span></h1>
+    </a>
+    <div class="links">
+      <a href="https://github.com/harishkotra/who-built-this" target="_blank">GitHub</a>
+      <span class="badge">Intuition Testnet</span>
     </div>
-    <div class="pill">Intuition Testnet</div>
-  </header>
+  </nav>
 
-  <div class="search-bar">
-    <input id="searchInput" type="text" placeholder="Search by atom ID (0x...) or label..." />
-    <button onclick="search()">Search</button>
+  <div class="hero">
+    <h2>Open Source Reputation Graph</h2>
+    <p>
+      Every GitHub repo, contributor, issue, PR, and npm package is published as an onchain
+      <strong style="color:var(--text)">atom</strong> on the Intuition blockchain.
+      Relationships between them — who contributed to what, who authored which PR, what a package depends on —
+      are published as <strong style="color:var(--text)">triples</strong>.
+      This explorer shows data published by the
+      <a href="https://github.com/harishkotra/who-built-this" target="_blank">Who Built This?</a> CLI tool.
+    </p>
   </div>
 
-  <div id="detail" style="display:none"></div>
-
-  <div class="grid" id="dashboard">
-    <div class="card">
-      <h2>&#9672; Recent Atoms</h2>
-      <ul class="atom-list" id="atomList"><li class="loading">Loading</li></ul>
-    </div>
-    <div class="card">
-      <h2>&#8594; Recent Triples</h2>
-      <ul class="triple-list" id="tripleList"><li class="loading">Loading</li></ul>
-    </div>
-    <div class="card">
-      <h2>&#9632; Stats</h2>
-      <div id="stats"><span class="loading">Loading</span></div>
-    </div>
-    <div class="card">
-      <h2>&#9432; About</h2>
-      <p style="font-size:13px;color:var(--muted);line-height:1.7">
-        Each GitHub repo, contributor, issue, PR, and npm package is published as an
-        <strong style="color:var(--text)">atom</strong> on the Intuition blockchain.
-        Relationships (e.g. "contributedTo", "authored") are published as
-        <strong style="color:var(--text)">triples</strong>.
-        Data is indexed by the Intuition GraphQL API.
-      </p>
+  <div class="status-bar" id="statusBar">
+    <div class="stat"><span class="num" id="atomCount">—</span><span class="label">atoms</span></div>
+    <div class="stat"><span class="num" id="tripleCount">—</span><span class="label">triples</span></div>
+    <div class="stat">
+      <span class="dot" id="statusDot"></span>
+      <span class="label" id="statusLabel">Connecting</span>
     </div>
   </div>
+
+  <div class="search-wrap">
+    <input id="searchInput" type="text" placeholder="Search by atom ID (0x...) or label name..." spellcheck="false" />
+  </div>
+
+  <div id="detail"></div>
+
+  <div class="two-col" id="dashboard">
+    <div class="card">
+      <div class="card-header">
+        <h3>Atoms</h3>
+        <span class="count" id="atomCountBadge">—</span>
+      </div>
+      <div class="card-body" id="atomList"><div class="loading-state"><span class="spinner"></span></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Triples</h3>
+        <span class="count" id="tripleCountBadge">—</span>
+      </div>
+      <div class="card-body" id="tripleList"><div class="loading-state"><span class="spinner"></span></div></div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/harishkotra/who-built-this" target="_blank">harishkotra/who-built-this</a></p>
+    <p>Powered by <a href="https://intuition.systems" target="_blank">Intuition</a> &middot; Testnet</p>
+  </footer>
 </div>
 
 <script>
 const API = 'https://testnet.intuition.sh/v1/graphql'
-
 const CREATOR = '0xA2c0CDd6882543884A89Ed97F8f2fa231661eE8E'
 
-function gql(query) {
+function q(query) {
   return fetch(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -155,135 +265,134 @@ function gql(query) {
   }).then(r => r.json()).then(d => { if (d.errors) throw new Error(d.errors[0].message); return d.data })
 }
 
-function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML }
+function esc(s) { const e = document.createElement('div'); e.textContent = s; return e.innerHTML }
 
-function shortId(id) {
+function short(id) {
   if (!id || id.length < 16) return id || ''
   return id.slice(0, 8) + '...' + id.slice(-6)
 }
 
-function atomLink(termId, label) {
-  return `<span class="term" onclick="showAtom('${escapeHtml(termId)}')">${escapeHtml(label || shortId(termId))}</span>`
+function link(id, label) {
+  return `<span class="term" onclick="showAtom('${esc(id)}')">${esc(label || short(id))}</span>`
 }
 
-async function loadDashboard() {
+async function load() {
   try {
-    const filter = `creator_id: { _eq: "${CREATOR}" }`
-    const [atomRes, tripleRes, statsRes] = await Promise.all([
-      gql(`{ atoms(limit: 15, where: { ${filter} }, order_by: { created_at: desc }) { term_id label type emoji } }`),
-      gql(`{ triples(limit: 15, where: { ${filter} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
-      gql(`{ atoms_aggregate(where: { ${filter} }) { aggregate { count } } triples_aggregate(where: { ${filter} }) { aggregate { count } } }`),
+    const f = `creator_id: { _eq: "${CREATOR}" }`
+    const r = await Promise.all([
+      q(`{ atoms(limit: 20, where: { ${f} }, order_by: { created_at: desc }) { term_id label type emoji } }`),
+      q(`{ triples(limit: 20, where: { ${f} }, order_by: { created_at: desc }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } } }`),
+      q(`{ atoms_aggregate(where: { ${f} }) { aggregate { count } } triples_aggregate(where: { ${f} }) { aggregate { count } } }`),
     ])
-    renderAtomList(atomRes.atoms)
-    renderTripleList(tripleRes.triples)
-    renderStats(statsRes)
+
+    const atoms = r[0].atoms || []
+    const triples = r[1].triples || []
+    const ac = r[2]?.atoms_aggregate?.aggregate?.count ?? 0
+    const tc = r[2]?.triples_aggregate?.aggregate?.count ?? 0
+
+    document.getElementById('atomCount').textContent = ac
+    document.getElementById('tripleCount').textContent = tc
+    document.getElementById('atomCountBadge').textContent = ac
+    document.getElementById('tripleCountBadge').textContent = tc
+
+    const dot = document.getElementById('statusDot')
+    const label = document.getElementById('statusLabel')
+    if (ac > 0 || tc > 0) {
+      dot.className = 'dot live'
+      label.textContent = 'Data available'
+    } else {
+      dot.className = 'dot lag'
+      label.textContent = 'Indexer pending'
+    }
+
+    renderAtoms(atoms)
+    renderTriples(triples)
   } catch (e) {
-    document.getElementById('atomList').innerHTML = `<li class="error">${escapeHtml(e.message)}</li>`
-    document.getElementById('tripleList').innerHTML = `<li class="error">${escapeHtml(e.message)}</li>`
+    document.getElementById('atomList').innerHTML = `<div class="error-state">${esc(e.message)}</div>`
+    document.getElementById('tripleList').innerHTML = `<div class="error-state">${esc(e.message)}</div>`
+    document.getElementById('statusDot').className = 'dot lag'
+    document.getElementById('statusLabel').textContent = 'Error'
   }
 }
 
-function renderAtomList(atoms) {
+function renderAtoms(atoms) {
   const el = document.getElementById('atomList')
-  if (!atoms || atoms.length === 0) { el.innerHTML = '<li class="empty">No atoms yet</li>'; return }
+  if (!atoms.length) { el.innerHTML = '<div class="empty-state">No atoms published yet — run <code>bun start ingest --repo owner/repo --publish</code></div>'; return }
   el.innerHTML = atoms.map(a => `
-    <li>
-      <div class="atom-label">${escapeHtml(a.emoji || '')} ${atomLink(a.term_id, a.label)}</div>
-      <div class="atom-id">${escapeHtml(shortId(a.term_id))} <span class="atom-type">${escapeHtml(a.type)}</span></div>
-    </li>
-  `).join('')
-}
-
-function renderTripleList(triples) {
-  const el = document.getElementById('tripleList')
-  if (!triples || triples.length === 0) { el.innerHTML = '<li class="empty">No triples yet</li>'; return }
-  el.innerHTML = triples.map(t => `
-    <li>
-      <div class="rel">
-        ${atomLink(t.subject.term_id, t.subject.label)}
-        <span class="arrow">&rarr;</span>
-        <span class="pred">${escapeHtml(t.predicate.label)}</span>
-        <span class="arrow">&rarr;</span>
-        ${atomLink(t.object.term_id, t.object.label)}
+    <div class="list-item" onclick="showAtom('${esc(a.term_id)}')">
+      <span class="emoji">${esc(a.emoji || '') || '&#9672;'}</span>
+      <div class="info">
+        <div class="name">${esc(a.label)}</div>
+        <div class="meta">${short(a.term_id)}</div>
       </div>
-      <div class="atom-id">${escapeHtml(shortId(t.term_id))}</div>
-    </li>
+      <span class="tag">${esc(a.type)}</span>
+    </div>
   `).join('')
 }
 
-function renderStats(data) {
-  const el = document.getElementById('stats')
-  const a = data?.atoms_aggregate?.aggregate?.count ?? '?'
-  const t = data?.triples_aggregate?.aggregate?.count ?? '?'
-  el.innerHTML = `
-    <div style="display:flex;gap:32px">
-      <div><div class="count">${a}</div><div style="font-size:13px;color:var(--muted)">Atoms</div></div>
-      <div><div class="count">${t}</div><div style="font-size:13px;color:var(--muted)">Triples</div></div>
+function renderTriples(triples) {
+  const el = document.getElementById('tripleList')
+  if (!triples.length) { el.innerHTML = '<div class="empty-state">No triples published yet</div>'; return }
+  el.innerHTML = triples.map(t => `
+    <div class="triple-row">
+      ${link(t.subject.term_id, t.subject.label)}
+      <span class="arrow">&rarr;</span>
+      <span class="pred">${esc(t.predicate.label)}</span>
+      <span class="arrow">&rarr;</span>
+      ${link(t.object.term_id, t.object.label)}
     </div>
-  `
+  `).join('')
 }
 
 async function showAtom(termId) {
   document.getElementById('dashboard').style.display = 'none'
-  const detail = document.getElementById('detail'); detail.style.display = 'block'
-  detail.innerHTML = '<div class="loading">Loading</div>'
+  const el = document.getElementById('detail'); el.style.display = 'block'
+  el.innerHTML = '<div class="loading-state"><span class="spinner"></span></div>'
 
   try {
-    const filter = `creator_id: { _eq: "${CREATOR}" }`
-    const res = await gql(`{
-      atom: atoms(where: { term_id: { _eq: "${termId}" } }) { term_id label type emoji data block_number }
-      as_subject: triples(where: { subject_id: { _eq: "${termId}" }, ${filter} }) {
-        term_id subject { term_id label } predicate { term_id label } object { term_id label }
-      }
-      as_predicate: triples(where: { predicate_id: { _eq: "${termId}" }, ${filter} }) {
-        term_id subject { term_id label } predicate { term_id label } object { term_id label }
-      }
-      as_object: triples(where: { object_id: { _eq: "${termId}" }, ${filter} }) {
-        term_id subject { term_id label } predicate { term_id label } object { term_id label }
-      }
+    const f = `creator_id: { _eq: "${CREATOR}" }`
+    const r = await q(`{
+      atom: atoms(where: { term_id: { _eq: "${termId}" } }) { term_id label type emoji data }
+      as_subject: triples(where: { subject_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
+      as_predicate: triples(where: { predicate_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
+      as_object: triples(where: { object_id: { _eq: "${termId}" }, ${f} }) { term_id subject { term_id label } predicate { term_id label } object { term_id label } }
     }`)
-    const a = res.atom?.[0]
-    if (!a) { detail.innerHTML = '<div class="error">Atom not found</div>'; return }
+    const a = r.atom?.[0]
+    if (!a) { el.innerHTML = '<div class="error-state">Atom not found</div>'; return }
 
-    const subs = res.as_subject || []
-    const preds = res.as_predicate || []
-    const objs = res.as_object || []
-
-    let tripleHtml = ''
-    const allTriples = [
-      ...subs.map(t => ({ ...t, role: 'subject' })),
-      ...preds.map(t => ({ ...t, role: 'predicate' })),
-      ...objs.map(t => ({ ...t, role: 'object' })),
+    const triples = [
+      ...(r.as_subject || []).map(t => ({ ...t, r: 'subject' })),
+      ...(r.as_predicate || []).map(t => ({ ...t, r: 'predicate' })),
+      ...(r.as_object || []).map(t => ({ ...t, r: 'object' })),
     ]
-    if (allTriples.length === 0) {
-      tripleHtml = '<div class="empty">No triples reference this atom</div>'
-    } else {
-      tripleHtml = '<div class="triple-graph">' + allTriples.map(t => {
-        const s = atomLink(t.subject.term_id, t.subject.label)
-        const p = `<span class="pred">${escapeHtml(t.predicate.label)}</span>`
-        const o = atomLink(t.object.term_id, t.object.label)
-        return `<div class="triple-row">${s} &rarr; ${p} &rarr; ${o}</div>`
-      }).join('') + '</div>'
-    }
 
-    detail.innerHTML = `
-      <div style="margin-bottom:16px">
-        <button onclick="back()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;color:var(--muted);cursor:pointer;font-size:13px">&larr; Back</button>
-      </div>
-      <div class="detail-header">
-        <h2>${escapeHtml(a.emoji || '')} ${escapeHtml(a.label)}</h2>
+    el.innerHTML = `
+      <div class="detail-top">
+        <button class="back" onclick="back()">&larr; Back</button>
+        <h2>${esc(a.emoji || '')} ${esc(a.label)}</h2>
         <div class="meta">
-          <span>${escapeHtml(a.type)}</span>
-          <span style="font-family:monospace;font-size:11px">${escapeHtml(a.term_id)}</span>
+          <span>${esc(a.type)}</span>
+          <span>${esc(short(a.term_id))}</span>
+          <span style="font-size:10px">${esc(a.term_id)}</span>
         </div>
       </div>
       <div class="card">
-        <h2>Triples (${allTriples.length})</h2>
-        ${tripleHtml}
+        <div class="card-header"><h3>Triples (${triples.length})</h3></div>
+        <div class="card-body">
+          ${triples.length ? triples.map(t => `
+            <div class="triple-row">
+              ${link(t.subject.term_id, t.subject.label)}
+              <span class="arrow">&rarr;</span>
+              <span class="pred">${esc(t.predicate.label)}</span>
+              <span class="arrow">&rarr;</span>
+              ${link(t.object.term_id, t.object.label)}
+            </div>
+          `).join('') : '<div class="empty-state">No triples reference this atom</div>'}
+        </div>
       </div>
     `
   } catch (e) {
-    detail.innerHTML = `<div class="error">${escapeHtml(e.message)}</div>`
+    el.innerHTML = `<div class="error-state">${esc(e.message)}</div>`
   }
 }
 
@@ -292,41 +401,42 @@ function back() {
   document.getElementById('dashboard').style.display = 'grid'
 }
 
-function search() {
-  const q = document.getElementById('searchInput').value.trim()
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return
+  const q = this.value.trim()
   if (!q) return
   if (q.startsWith('0x') && q.length >= 10) { showAtom(q); return }
   searchByLabel(q)
-}
+})
 
 async function searchByLabel(q) {
   document.getElementById('dashboard').style.display = 'none'
-  const detail = document.getElementById('detail'); detail.style.display = 'block'
-  detail.innerHTML = '<div class="loading">Searching</div>'
+  const el = document.getElementById('detail'); el.style.display = 'block'
+  el.innerHTML = '<div class="loading-state"><span class="spinner"></span></div>'
   try {
-    const res = await gql(`{ atoms(limit: 20, where: { label: { _ilike: "%${q}%" } }) { term_id label type emoji } }`)
-    if (!res.atoms || res.atoms.length === 0) {
-      detail.innerHTML = `
-        <div style="margin-bottom:16px"><button onclick="back()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;color:var(--muted);cursor:pointer;font-size:13px">&larr; Back</button></div>
-        <div class="error">No atoms matching "${escapeHtml(q)}"</div>`
+    const r = await q(`{ atoms(limit: 20, where: { creator_id: { _eq: "${CREATOR}" }, label: { _ilike: "%${q}%" } }) { term_id label type emoji } }`)
+    if (!r.atoms || !r.atoms.length) {
+      el.innerHTML = `
+        <div class="detail-top"><button class="back" onclick="back()">&larr; Back</button></div>
+        <div class="error-state">No atoms matching "${esc(q)}"</div>`
       return
     }
-    detail.innerHTML = `
-      <div style="margin-bottom:16px"><button onclick="back()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;color:var(--muted);cursor:pointer;font-size:13px">&larr; Back</button></div>
-      <div class="card"><h2>Search: "${escapeHtml(q)}" (${res.atoms.length})</h2>
-      <ul class="atom-list">${res.atoms.map(a => `
-        <li>
-          <div class="atom-label">${escapeHtml(a.emoji || '')} ${atomLink(a.term_id, a.label)}</div>
-          <div class="atom-id">${escapeHtml(shortId(a.term_id))} <span class="atom-type">${escapeHtml(a.type)}</span></div>
-        </li>
-      `).join('')}</ul></div>`
+    el.innerHTML = `
+      <div class="detail-top"><button class="back" onclick="back()">&larr; Back</button></div>
+      <div class="card"><div class="card-header"><h3>Search: ${esc(q)} (${r.atoms.length})</h3></div>
+      <div class="card-body">${r.atoms.map(a => `
+        <div class="list-item" onclick="showAtom('${esc(a.term_id)}')">
+          <span class="emoji">${esc(a.emoji || '') || '&#9672;'}</span>
+          <div class="info"><div class="name">${esc(a.label)}</div><div class="meta">${short(a.term_id)}</div></div>
+          <span class="tag">${esc(a.type)}</span>
+        </div>
+      `).join('')}</div></div>`
   } catch (e) {
-    detail.innerHTML = `<div class="error">${escapeHtml(e.message)}</div>`
+    el.innerHTML = `<div class="error-state">${esc(e.message)}</div>`
   }
 }
 
-document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') search() })
-loadDashboard()
+load()
 </script>
 </body>
 </html>
